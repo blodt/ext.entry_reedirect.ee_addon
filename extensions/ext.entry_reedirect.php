@@ -9,7 +9,7 @@ class Entry_reedirect
 {
 	var $settings        = array();
 	var $name            = 'Entry REEdirect';
-	var $version         = '1.0.0';
+	var $version         = '1.0.1';
 	var $description     = 'Choose where users are redirected after publishing/updating new entries in the control panel.';
 	var $settings_exist  = 'y';
 	var $docs_url        = '';
@@ -39,7 +39,8 @@ class Entry_reedirect
 		$locations = array(
 			'default' => 'Default Preview',
 			'new' => 'Publish Form',
-			'edit' => 'Edit Entries'
+			'remain' => 'Edit Entry',
+			'edit' => 'Manage Entries'
 		);
 		
 		$global_locations = $locations;
@@ -96,6 +97,15 @@ class Entry_reedirect
 					'reedirect_entry_id='.$entry_id.AMP.
 					'U='.$type;
 					break;
+				case 'remain':
+					$location = BASE.AMP.
+					'C=edit'.AMP.
+					'M=edit_entry'.AMP.
+					'weblog_id='.$data['weblog_id'].AMP.
+					'entry_id='.$entry_id.AMP.
+					'reedirect_entry_id='.$entry_id.AMP.
+					'U='.$type;
+					break;
 				case 'edit':
 					$location = BASE.AMP.
 					'C=edit'.AMP.
@@ -144,6 +154,7 @@ class Entry_reedirect
 			$target = '</head>';
 			$js = '
 			<script type="text/javascript">
+			<!-- Added by Entry REEdirect -->
 			$(document).ready(function()
 				{
 					if($("input[type=radio][name=global_new_entry_redirect]:checked").val() != "none")
@@ -200,10 +211,15 @@ class Entry_reedirect
 			{	
 				$message .= $LANG->line('entry_has_been_updated');
 			}
-			$message .= $DSP->span_c().$DSP->qspan('',': ' . $title).
-			$DSP->span('defaultSmall').$DSP->qspan('defaultLight', '&nbsp;|&nbsp;').
-			$DSP->anchor(BASE.AMP.'C=edit'.AMP.'M=edit_entry'.AMP.'weblog_id='.$_GET['weblog_id'].AMP.'entry_id='.$_GET['reedirect_entry_id'], $LANG->line('edit_this_entry')).
-			$DSP->span_c().$DSP->div_c();
+			$message .= $DSP->span_c();
+			if($_GET['M'] != 'edit_entry')
+			{
+				$message .= $DSP->qspan('',': ' . $title).
+				$DSP->span('defaultSmall').$DSP->qspan('defaultLight', '&nbsp;|&nbsp;').
+				$DSP->anchor(BASE.AMP.'C=edit'.AMP.'M=edit_entry'.AMP.'weblog_id='.$_GET['weblog_id'].AMP.'entry_id='.$_GET['reedirect_entry_id'], $LANG->line('edit_this_entry')).
+				$DSP->span_c();
+			}
+			$message .= $DSP->div_c();
 			
 			$out = str_replace($target, $message, $out);
 		}
