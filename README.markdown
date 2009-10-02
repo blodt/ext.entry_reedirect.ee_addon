@@ -4,7 +4,8 @@ For each weblog you have three redirect location options for both **new entries*
 
 - **Default Preview** - EE's built-in success screen with ugly entry preview
 - **Publish Form** - new entry screen for the same weblog you just published to
-- **Edit Entries** - the Edit tab, filtered to display entries from the weblog you just published to
+- **Edit Entry** - keep editing the entry you just published or updated
+- **Manage Entries** - the Edit tab, filtered to display entries from the weblog you just published to
 
 In all cases the author will see a "success" message for their new entry or update, along with the entry's title and an "Edit this entry" link.
 
