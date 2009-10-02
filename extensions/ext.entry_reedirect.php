@@ -137,7 +137,7 @@ class Entry_reedirect
     
     
 	// --------------------------------
-	//  Add the message
+	//  Edits to the control panel output
 	// --------------------------------  	
 	
 	function cp_changes($out) {
@@ -193,7 +193,6 @@ class Entry_reedirect
 			$out = str_replace($target, $js, $out);
 		}
 		
-		
 		// Display success messages
 		if(isset($_GET['reedirect_entry_id']))
 		{
@@ -202,7 +201,7 @@ class Entry_reedirect
 			$get_title = $DB->query("SELECT title FROM exp_weblog_titles WHERE entry_id = " . $DB->escape_str($_GET['reedirect_entry_id']) . " LIMIT 1");
 			$title = $get_title->row['title'];
 			
-			$message = $target.$DSP->div('box').$DSP->span('success');
+			$message = $target.'<div id="entry_reedirect_message" class="box">'.$DSP->span('success');
 			if($_GET['U'] == 'new')
 			{
 				$message .= $LANG->line('entry_has_been_added');
@@ -222,7 +221,25 @@ class Entry_reedirect
 			$message .= $DSP->div_c();
 			
 			$out = str_replace($target, $message, $out);
-		}
+			
+			
+			// Success message goes bye-bye after 5 seconds
+			$target = '</head>';
+			$js = '
+			<script type="text/javascript">
+			<!-- Added by Entry REEdirect -->
+			$(document).ready(function()
+				{
+					setTimeout(function(){$("div#entry_reedirect_message").slideUp();},5000);
+				}
+			);
+			</script>
+			</head>
+			';		
+			
+			$out = str_replace($target, $js, $out);
+		
+		}		
 		
 		return $out;
 
