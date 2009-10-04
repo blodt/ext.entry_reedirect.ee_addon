@@ -9,7 +9,7 @@ class Entry_reedirect
 {
 	var $settings        = array();
 	var $name            = 'Entry REEdirect';
-	var $version         = '1.0.1';
+	var $version         = '1.0.2';
 	var $description     = 'Choose where users are redirected after publishing/updating new entries in the control panel.';
 	var $settings_exist  = 'y';
 	var $docs_url        = '';
@@ -46,6 +46,7 @@ class Entry_reedirect
 		$global_locations = $locations;
 		$global_locations['none'] = 'None';
 		
+		$settings['hide_success_message'] = '5';
 		$settings['global_new_entry_redirect'] = array('r', $global_locations, 'none');
 		$settings['global_updated_entry_redirect'] = array('r', $global_locations, 'none');
 	
@@ -57,7 +58,7 @@ class Entry_reedirect
 				$LANG->language['new_redirect_weblog_id_'.$value['weblog_id']] = "Redirect after publishing new " . strtoupper($value['blog_title']) . ' entries:';
 				$settings['new_redirect_weblog_id_'.$value['weblog_id']] = array('s', $locations, 'default');
 				$LANG->language['updated_redirect_weblog_id_'.$value['weblog_id']] = "Redirect after updating " . strtoupper($value['blog_title']) . ' entries:';
-				$settings['updated_redirect_weblog_id_'.$value['weblog_id']] = array('s', $locations, 'default');			}
+				$settings['updated_redirect_weblog_id_'.$value['weblog_id']] = array('s', $locations, 'default');				}
 		}
 	    
 	    return $settings;
@@ -67,7 +68,7 @@ class Entry_reedirect
 	
 	// --------------------------------
 	//  Put $_POST['return_url'] into a global variable so we can access it later
-	//	(No access to this variable from the other, more appropriate hooks)
+	//  (No access to this variable from the other, more appropriate hooks)
 	// --------------------------------  	
 	
 	function grab_return_url() {		
@@ -222,23 +223,20 @@ class Entry_reedirect
 			
 			$out = str_replace($target, $message, $out);
 			
-			
-			// Success message goes bye-bye after 5 seconds
-			$target = '</head>';
-			$js = '
-			<script type="text/javascript">
-			<!-- Added by Entry REEdirect -->
-			$(document).ready(function()
-				{
-					setTimeout(function(){$("div#entry_reedirect_message").slideUp();},5000);
-				}
-			);
-			</script>
-			</head>
-			';		
-			
-			$out = str_replace($target, $js, $out);
-		
+			// Success message goes bye-bye?
+			if($this->settings['hide_success_message'])
+			{
+				$target = '</head>';
+				$js = '
+				<script type="text/javascript">
+				<!-- Added by Entry REEdirect -->
+				$(document).ready(function(){setTimeout(function(){$("div#entry_reedirect_message").slideUp();},'.($this->settings['hide_success_message']*1000).');});
+				</script>
+				</head>
+				';		
+				
+				$out = str_replace($target, $js, $out);
+			}		
 		}		
 		
 		return $out;
@@ -313,11 +311,6 @@ class Entry_reedirect
 	    {
 	        return FALSE;
 	    }
-	    
-	    if ($current < '1.0.1')
-	    {
-	    	// Do upgrade stuff here.
-		}
 	    
 	    $DB->query("UPDATE exp_extensions 
 	                SET version = '".$DB->escape_str($this->version)."' 
