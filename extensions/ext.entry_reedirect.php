@@ -211,14 +211,20 @@ class Entry_reedirect
 			{	
 				$message .= $LANG->line('entry_has_been_updated');
 			}
-			$message .= $DSP->span_c();
+
 			if($_GET['M'] != 'edit_entry')
 			{
-				$message .= $DSP->qspan('',': ' . $title).
+				$message .= ': '.$DSP->span_c();
+				$message .= $DSP->qspan('defaultBold', $title).
 				$DSP->span('defaultSmall').$DSP->qspan('defaultLight', '&nbsp;|&nbsp;').
 				$DSP->anchor(BASE.AMP.'C=edit'.AMP.'M=edit_entry'.AMP.'weblog_id='.$_GET['weblog_id'].AMP.'entry_id='.$_GET['reedirect_entry_id'], $LANG->line('edit_this_entry')).
 				$DSP->span_c();
 			}
+			else
+			{
+				$message .= $DSP->span_c();
+			}
+			
 			$message .= $DSP->div_c();
 			
 			$out = str_replace($target, $message, $out);
@@ -237,7 +243,16 @@ class Entry_reedirect
 				
 				$out = str_replace($target, $js, $out);
 			}		
-		}		
+		}
+		
+		// May as well make the other success messages a little nicer
+		// (Delete and multi-entry category update. No message for multi-entry edit for some reason.)
+		if($_GET['C'] == 'edit' && ($_GET['M'] == 'delete_entries' || $_GET['M'] == 'entry_category_update'))
+		{
+			$target = "/<div class='success' >\s*([^<]*)\s*/";
+			$message = '<div class="box"><span class="success">$1</span>';
+			$out = preg_replace($target, $message, $out);
+		}
 		
 		return $out;
 
