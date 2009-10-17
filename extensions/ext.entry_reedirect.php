@@ -150,7 +150,7 @@ class Entry_reedirect
 		}
 		
 		// Add jQuery to extension settings page
-		if($_GET['P'] == 'extension_settings' && $_GET['name'] == 'entry_reedirect')
+		if( (isset($_GET['P']) && $_GET['P'] == 'extension_settings') && $_GET['name'] == 'entry_reedirect')
 		{
 			$target = '</head>';
 			$js = '
@@ -247,7 +247,7 @@ class Entry_reedirect
 		
 		// May as well make the other success messages a little nicer
 		// (Delete and multi-entry category update. No message for multi-entry edit for some reason.)
-		if($_GET['C'] == 'edit' && ($_GET['M'] == 'delete_entries' || $_GET['M'] == 'entry_category_update'))
+		if( isset($_GET['C']) && $_GET['C'] == 'edit' && isset($_GET['M']) && ($_GET['M'] == 'delete_entries' || $_GET['M'] == 'entry_category_update'))
 		{
 			$target = "/<div class='success' >\s*([^<]*)\s*/";
 			$message = '<div class="box"><span class="success">$1</span>';
