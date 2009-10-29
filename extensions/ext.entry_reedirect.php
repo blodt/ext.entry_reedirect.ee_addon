@@ -9,7 +9,7 @@ class Entry_reedirect
 {
 	var $settings        = array();
 	var $name            = 'Entry REEdirect';
-	var $version         = '1.0.2';
+	var $version         = '1.0.3';
 	var $description     = 'Choose where users are redirected after publishing/updating new entries in the control panel.';
 	var $settings_exist  = 'y';
 	var $docs_url        = '';
@@ -194,55 +194,119 @@ class Entry_reedirect
 			$out = str_replace($target, $js, $out);
 		}
 		
+		
 		// Display success messages
+		$find = array();
+		$replace = array();
+		
 		if(isset($_GET['reedirect_entry_id']))
 		{
-			$target = "<div id='contentNB'>";
+			// Success message goes bye-bye? If so, add the callback.
+			$auto_hide = ($this->settings['hide_success_message']) ? ',function(){
+				setTimeout(
+					function(){
+						$("div#entry_reedirect_message").slideUp();
+					}
+				,'.($this->settings['hide_success_message']*1000).'
+				);
+			}' : '';	
 			
-			$get_title = $DB->query("SELECT title FROM exp_weblog_titles WHERE entry_id = " . $DB->escape_str($_GET['reedirect_entry_id']) . " LIMIT 1");
-			$title = $get_title->row['title'];
+			$find[] = "<div id='contentNB'>";
 			
-			$message = $target.'<div id="entry_reedirect_message" class="box">'.$DSP->span('success');
-			if($_GET['U'] == 'new')
-			{
-				$message .= $LANG->line('entry_has_been_added');
-			}
-			elseif($_GET['U'] == 'updated')
-			{	
-				$message .= $LANG->line('entry_has_been_updated');
-			}
-
-			if($_GET['M'] != 'edit_entry')
-			{
-				$message .= ': '.$DSP->span_c();
-				$message .= $DSP->qspan('defaultBold', $title).
-				$DSP->span('defaultSmall').$DSP->qspan('defaultLight', '&nbsp;|&nbsp;').
-				$DSP->anchor(BASE.AMP.'C=edit'.AMP.'M=edit_entry'.AMP.'weblog_id='.$_GET['weblog_id'].AMP.'entry_id='.$_GET['reedirect_entry_id'], $LANG->line('edit_this_entry')).
-				$DSP->span_c();
-			}
-			else
-			{
-				$message .= $DSP->span_c();
-			}
-			
-			$message .= $DSP->div_c();
-			
-			$out = str_replace($target, $message, $out);
-			
-			// Success message goes bye-bye?
-			if($this->settings['hide_success_message'])
-			{
-				$target = '</head>';
-				$js = '
-				<script type="text/javascript">
-				<!-- Added by Entry REEdirect -->
-				$(document).ready(function(){setTimeout(function(){$("div#entry_reedirect_message").slideUp();},'.($this->settings['hide_success_message']*1000).');});
-				</script>
-				</head>
-				';		
+				$get_title = $DB->query("SELECT title FROM exp_weblog_titles 
+					WHERE entry_id = " . $DB->escape_str($_GET['reedirect_entry_id']) . " LIMIT 1");
+				$title = $get_title->row['title'];
 				
-				$out = str_replace($target, $js, $out);
-			}		
+				$message = "<div id='contentNB'>
+				".'<div id="entry_reedirect_message"><div>'.$DSP->span('success');
+				if($_GET['U'] == 'new')
+				{
+					$message .= $LANG->line('entry_has_been_added');
+				}
+				elseif($_GET['U'] == 'updated')
+				{	
+					$message .= $LANG->line('entry_has_been_updated');
+				}
+	
+				if($_GET['M'] != 'edit_entry')
+				{
+					$message .= ': '.$DSP->span_c();
+					$message .= $DSP->qspan('defaultBold', $title).
+					$DSP->span('defaultSmall').$DSP->qspan('defaultLight', '&nbsp;|&nbsp;').
+					$DSP->anchor(BASE.AMP.'C=edit'.AMP.'M=edit_entry'.AMP.
+						'weblog_id='.$_GET['weblog_id'].AMP.'entry_id='.$_GET['reedirect_entry_id'], 
+						$LANG->line('edit_this_entry')).
+					$DSP->span_c();
+				}
+				else
+				{
+					$message .= $DSP->span_c();
+				}
+				
+				$message .= '<a href="#" id="reedirectClose" title="Hide this notice">&times;</a>'
+					.$DSP->div_c().$DSP->div_c();
+			
+			$replace[] = $message;
+			
+			$find[] = '</head>';
+			
+			$replace[] = '
+				<style type="text/css">
+				#entry_reedirect_message {
+					border-bottom:1px solid #CCC9A4;
+					position: fixed;
+					width: 100%;
+					left: 0;
+					top: 0;
+					display: none;
+				}
+				* html #entry_reedirect_message {
+					position: absolute;
+				}
+				#entry_reedirect_message div {
+					padding: 10px 15px;
+					background-color: rgb(252,252,222);
+				}
+				#entry_reedirect_message > div {
+					background-color: rgba(252,252,222,0.95);	
+				}
+				a#reedirectClose {
+					display: block;
+					position: absolute;
+					right: 15px;
+					top: 7px;
+					padding: 0 3px;
+					border: 1px solid #CCC9A4;
+					font-size: 18px;
+					line-height: 18px;
+					color: #CCC9A4;
+					text-decoration: none;
+					-webkit-border-radius: 3px;
+					-moz-border-radius: 3px;
+					border-radius: 3px;
+				}
+				a#reedirectClose:hover {
+					background-color: #CCC9A4;
+					color: rgb(252,252,222);
+				}
+				</style>
+				
+				<script type="text/javascript">
+					<!-- Added by Entry REEdirect -->
+					$(document).ready(function(){
+						$("div#entry_reedirect_message").slideDown("normal"'.$auto_hide.');
+						$("a#reedirectClose").click(function(){
+							$("div#entry_reedirect_message").slideUp();
+							return false;
+						});
+					});
+				</script>
+				
+				</head>
+			';
+			
+			$out = str_replace($find, $replace, $out);
+				
 		}
 		
 		// May as well make the other success messages a little nicer

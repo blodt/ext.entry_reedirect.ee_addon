@@ -7,7 +7,7 @@ For each weblog you have four redirect location options for both **new entries**
 - **Edit Entry** - keep editing the entry you just published or updated
 - **Manage Entries** - the Edit tab, filtered to display entries from the weblog you just published to
 
-In all cases the author will see a "success" message for their new entry or update, along with the entry's title and an "Edit this entry" link. This success message can optionally disappear after a specified length of time.
+In all cases the author will see a "success" message for their new entry or update, along with the entry's title and an "Edit this entry" link. This success message can optionally disappear after a specified length of time, and has a "close" link as well.
 
 The Extension Settings screen offers optional one-click setting of all of your weblogs to the same option for both new entries and updated entries.
 
