@@ -87,7 +87,7 @@ class Entry_reedirect
 		if($cp_call == TRUE)
 		{
 			$type = ($_POST['entry_id']) ? 'updated' : 'new';
-			$redirect = $this->settings[$type.'_redirect_weblog_id_'.$data['weblog_id']];
+			$redirect = ($this->settings) ? $this->settings[$type.'_redirect_weblog_id_'.$data['weblog_id']] : '';
 			$default = BASE.AMP.
 			'C=edit'.AMP.
 			'M=view_entry'.AMP.
