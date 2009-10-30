@@ -87,41 +87,50 @@ class Entry_reedirect
 		if($cp_call == TRUE)
 		{
 			$type = ($_POST['entry_id']) ? 'updated' : 'new';
+			$redirect = $this->settings[$type.'_redirect_weblog_id_'.$data['weblog_id']];
+			$default = BASE.AMP.
+			'C=edit'.AMP.
+			'M=view_entry'.AMP.
+			'weblog_id='.$data['weblog_id'].AMP.
+			'entry_id='.$entry_id.AMP.
+			'U='.$type;
 			
-			switch($this->settings[$type.'_redirect_weblog_id_'.$data['weblog_id']])
+			if($redirect)
 			{
-				case 'new':
-					$location = BASE.AMP.
-					'C=publish'.AMP.
-					'M=entry_form'.AMP.
-					'weblog_id='.$data['weblog_id'].AMP.
-					'reedirect_entry_id='.$entry_id.AMP.
-					'U='.$type;
-					break;
-				case 'remain':
-					$location = BASE.AMP.
-					'C=edit'.AMP.
-					'M=edit_entry'.AMP.
-					'weblog_id='.$data['weblog_id'].AMP.
-					'entry_id='.$entry_id.AMP.
-					'reedirect_entry_id='.$entry_id.AMP.
-					'U='.$type;
-					break;
-				case 'edit':
-					$location = BASE.AMP.
-					'C=edit'.AMP.
-					'M=view_entries'.AMP.
-					'weblog_id='.$data['weblog_id'].AMP.
-					'reedirect_entry_id='.$entry_id.AMP.
-					'U='.$type;
-					break;
-				default:
-					$location = BASE.AMP.
-					'C=edit'.AMP.
-					'M=view_entry'.AMP.
-					'weblog_id='.$data['weblog_id'].AMP.
-					'entry_id='.$entry_id.AMP.
-					'U='.$type;				
+				switch($redirect)
+					{
+						case 'new':
+							$location = BASE.AMP.
+							'C=publish'.AMP.
+							'M=entry_form'.AMP.
+							'weblog_id='.$data['weblog_id'].AMP.
+							'reedirect_entry_id='.$entry_id.AMP.
+							'U='.$type;
+							break;
+						case 'remain':
+							$location = BASE.AMP.
+							'C=edit'.AMP.
+							'M=edit_entry'.AMP.
+							'weblog_id='.$data['weblog_id'].AMP.
+							'entry_id='.$entry_id.AMP.
+							'reedirect_entry_id='.$entry_id.AMP.
+							'U='.$type;
+							break;
+						case 'edit':
+							$location = BASE.AMP.
+							'C=edit'.AMP.
+							'M=view_entries'.AMP.
+							'weblog_id='.$data['weblog_id'].AMP.
+							'reedirect_entry_id='.$entry_id.AMP.
+							'U='.$type;
+							break;
+						default:
+							$location = $default;			
+					}
+			}
+			else
+			{
+				$location = $default;	
 			}
 		}
 		else
@@ -213,38 +222,38 @@ class Entry_reedirect
 			
 			$find[] = "<div id='contentNB'>";
 			
-				$get_title = $DB->query("SELECT title FROM exp_weblog_titles 
-					WHERE entry_id = " . $DB->escape_str($_GET['reedirect_entry_id']) . " LIMIT 1");
-				$title = $get_title->row['title'];
-				
-				$message = "<div id='contentNB'>
-				".'<div id="entry_reedirect_message"><div>'.$DSP->span('success');
-				if($_GET['U'] == 'new')
-				{
-					$message .= $LANG->line('entry_has_been_added');
-				}
-				elseif($_GET['U'] == 'updated')
-				{	
-					$message .= $LANG->line('entry_has_been_updated');
-				}
-	
-				if($_GET['M'] != 'edit_entry')
-				{
-					$message .= ': '.$DSP->span_c();
-					$message .= $DSP->qspan('defaultBold', $title).
-					$DSP->span('defaultSmall').$DSP->qspan('defaultLight', '&nbsp;|&nbsp;').
-					$DSP->anchor(BASE.AMP.'C=edit'.AMP.'M=edit_entry'.AMP.
-						'weblog_id='.$_GET['weblog_id'].AMP.'entry_id='.$_GET['reedirect_entry_id'], 
-						$LANG->line('edit_this_entry')).
-					$DSP->span_c();
-				}
-				else
-				{
-					$message .= $DSP->span_c();
-				}
-				
-				$message .= '<a href="#" id="reedirectClose" title="Hide this notice">&times;</a>'
-					.$DSP->div_c().$DSP->div_c();
+			$get_title = $DB->query("SELECT title FROM exp_weblog_titles 
+				WHERE entry_id = " . $DB->escape_str($_GET['reedirect_entry_id']) . " LIMIT 1");
+			$title = $get_title->row['title'];
+			
+			$message = "<div id='contentNB'>
+			".'<div id="entry_reedirect_message"><div>'.$DSP->span('success');
+			if($_GET['U'] == 'new')
+			{
+				$message .= $LANG->line('entry_has_been_added');
+			}
+			elseif($_GET['U'] == 'updated')
+			{	
+				$message .= $LANG->line('entry_has_been_updated');
+			}
+
+			if($_GET['M'] != 'edit_entry')
+			{
+				$message .= ': '.$DSP->span_c();
+				$message .= $DSP->qspan('defaultBold', $title).
+				$DSP->span('defaultSmall').$DSP->qspan('defaultLight', '&nbsp;|&nbsp;').
+				$DSP->anchor(BASE.AMP.'C=edit'.AMP.'M=edit_entry'.AMP.
+					'weblog_id='.$_GET['weblog_id'].AMP.'entry_id='.$_GET['reedirect_entry_id'], 
+					$LANG->line('edit_this_entry')).
+				$DSP->span_c();
+			}
+			else
+			{
+				$message .= $DSP->span_c();
+			}
+			
+			$message .= '<a href="#" id="reedirectClose" title="Hide this notice">&times;</a>'
+				.$DSP->div_c().$DSP->div_c();
 			
 			$replace[] = $message;
 			
@@ -332,48 +341,28 @@ class Entry_reedirect
 	{
 	    global $DB;
 
-	    $DB->query($DB->insert_string('exp_extensions',
-	    	array(
-				'extension_id' => '',
-		        'class'        => "Entry_reedirect",
-		        'method'       => "grab_return_url",
-		        'hook'         => "weblog_standalone_insert_entry",
-		        'settings'     => "",
-		        'priority'     => 10,
-		        'version'      => $this->version,
-		        'enabled'      => "y"
+	    $hooks = array(
+	    	'weblog_standalone_insert_entry' => 'grab_return_url',
+	    	'submit_new_entry_redirect' => 'redirect_location',
+	    	'show_full_control_panel_end' => 'cp_changes'
+	    );
+	    
+	    foreach($hooks as $hook => $method)
+	    {
+		    $DB->query($DB->insert_string('exp_extensions',
+		    	array(
+					'extension_id' => '',
+			        'class'        => "Entry_reedirect",
+			        'method'       => $method,
+			        'hook'         => $hook,
+			        'settings'     => "",
+			        'priority'     => 10,
+			        'version'      => $this->version,
+			        'enabled'      => "y"
+					)
 				)
-			)
-		);
-		
-	    $DB->query($DB->insert_string('exp_extensions',
-	    	array(
-				'extension_id' => '',
-		        'class'        => "Entry_reedirect",
-		        'method'       => "redirect_location",
-		        'hook'         => "submit_new_entry_redirect",
-		        'settings'     => "",
-		        'priority'     => 10,
-		        'version'      => $this->version,
-		        'enabled'      => "y"
-				)
-			)
-		);
-
-	    $DB->query($DB->insert_string('exp_extensions',
-	    	array(
-				'extension_id' => '',
-		        'class'        => "Entry_reedirect",
-		        'method'       => "cp_changes",
-		        'hook'         => "show_full_control_panel_end",
-		        'settings'     => "",
-		        'priority'     => 10,
-		        'version'      => $this->version,
-		        'enabled'      => "y"
-				)
-			)
-		);
-		
+			);
+	    }		
 	}
 	// END
 
