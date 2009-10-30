@@ -355,7 +355,7 @@ class Entry_reedirect
 			        'class'        => "Entry_reedirect",
 			        'method'       => $method,
 			        'hook'         => $hook,
-			        'settings'     => "",
+			        'settings'     => serialize($this->settings),
 			        'priority'     => 10,
 			        'version'      => $this->version,
 			        'enabled'      => "y"
