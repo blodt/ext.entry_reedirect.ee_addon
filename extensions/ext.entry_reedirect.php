@@ -12,7 +12,7 @@ class Entry_reedirect
 	var $version         = '1.0.3';
 	var $description     = 'Choose where users are redirected after publishing/updating new entries in the control panel.';
 	var $settings_exist  = 'y';
-	var $docs_url        = '';
+	var $docs_url        = 'http://github.com/amphibian/ext.entry_reedirect.ee_addon';
 
 	
 	// -------------------------------
@@ -355,7 +355,7 @@ class Entry_reedirect
 			        'class'        => "Entry_reedirect",
 			        'method'       => $method,
 			        'hook'         => $hook,
-			        'settings'     => serialize($this->settings),
+			        'settings'     => '',
 			        'priority'     => 10,
 			        'version'      => $this->version,
 			        'enabled'      => "y"
