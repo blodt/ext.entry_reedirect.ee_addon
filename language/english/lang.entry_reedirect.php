@@ -1,12 +1,13 @@
 <?php
-
+global $PREFs;
 $L = array(
-	'Default Preview' => 'Default Preview',
-	'Publish Form' => 'Publish Form',
-	'Edit Entry' => 'Edit Entry',
-	'Manage Entries' => 'Manage Entries',
-	'None' => 'None',
-	'global_new_entry_redirect' => 'Global redirect after publishing new entries:',
-	'global_updated_entry_redirect' => 'Global redirect after updating entries:',
+	'default_lang' => 'Default Preview',
+	'new_lang' => 'Publish Form',
+	'remain_lang' => 'Edit Entry',
+	'edit_lang' => 'Manage Entries',
+	'none' => '--',
+	'redirect_after_new' => 'Redirect after publishing new entries',
+	'redirect_after_update' => 'Redirect after updating existing entries',
+	'global_redirect' => 'Quick-set all '.$PREFS->ini('weblog_nomenclature').'s',
 	'hide_success_message' => 'Seconds until success message disappears (\'0\' for persistent)'
 );
