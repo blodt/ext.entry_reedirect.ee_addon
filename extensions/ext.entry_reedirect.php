@@ -62,7 +62,7 @@ class Entry_reedirect
 		
 		// $DSP->body .=	'<pre>'.print_r($current, TRUE).'</pre>';
 	
-		$DSP->body .=   $DSP->heading($this->name, 1);
+		$DSP->body .=   $DSP->heading($this->name.NBS.$DSP->qspan('defaultLight', $this->version), 1);
 		
 		// Open the table
 		$DSP->body .=   $DSP->table('tableBorder', '0', '', '100%');
