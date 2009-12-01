@@ -5,6 +5,7 @@ $L = array(
 	'new_lang' => 'Publish Form',
 	'remain_lang' => 'Edit Entry',
 	'edit_lang' => 'Manage Entries',
+	'structure_lang' => 'Structure Module',
 	'none' => '--',
 	'redirect_after_new' => 'Redirect after publishing new entries',
 	'redirect_after_update' => 'Redirect after updating existing entries',

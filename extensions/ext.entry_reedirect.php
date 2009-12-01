@@ -9,7 +9,7 @@ class Entry_reedirect
 {
 	var $settings        = array();
 	var $name            = 'Entry REEdirect';
-	var $version         = '1.0.4';
+	var $version         = '1.0.5';
 	var $description     = 'Choose where users are redirected after publishing/updating new entries in the control panel.';
 	var $settings_exist  = 'y';
 	var $docs_url        = 'http://github.com/amphibian/ext.entry_reedirect.ee_addon';
@@ -35,7 +35,14 @@ class Entry_reedirect
 	    global $DB, $DSP, $IN, $LANG, $PREFS;
 				
 		$locations = array('default','new','remain','edit');
-
+		
+		// Check to see if the Structure module is installed
+		$structure = $DB->query("SELECT module_id FROM exp_modules WHERE module_name = 'Structure'");
+		if($structure->num_rows > 0)
+		{
+			$locations[] = 'structure';
+		}
+		
 		$weblogs = $DB->query("SELECT blog_title, weblog_id 
 			FROM exp_weblogs 
 			WHERE site_id = '".$DB->escape_str($PREFS->ini('site_id'))."' 
@@ -269,6 +276,14 @@ class Entry_reedirect
 							'reedirect_entry_id='.$entry_id.AMP.
 							'U='.$type;
 							break;
+						case 'structure':
+							$location = BASE.AMP.
+							'C=modules'.AMP.
+							'M=Structure'.AMP.
+							'weblog_id='.$data['weblog_id'].AMP.
+							'reedirect_entry_id='.$entry_id.AMP.
+							'U='.$type;
+							break;
 						default:
 							$location = $default;			
 					}
@@ -337,7 +352,7 @@ class Entry_reedirect
 						$("select[name^=updated_redirect]").removeAttr("disabled");
 					}
 				});
-				$("form[name=entry_reedirect]").submit(function(){
+				$("form#entry_reedirect").submit(function(){
 					$("select[name*=redirect_weblog_id]").removeAttr("disabled");
 				});
 			});
