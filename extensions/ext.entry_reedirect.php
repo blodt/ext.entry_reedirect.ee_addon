@@ -325,8 +325,7 @@ class Entry_reedirect
 			$js = '
 			<script type="text/javascript">
 			<!-- Added by Entry REEdirect -->
-			jQuery.noConflict();
-			jQuery(document).ready(function($)
+			$(document).ready(function()
 			{
 				$("select[name=global_new_entry_redirect]").change(function(){
 					var setValue = $(this).val();
@@ -364,8 +363,7 @@ class Entry_reedirect
 		
 		
 		// Display success messages
-		$find = array();
-		$replace = array();
+		$find = array("<div id='contentNB'>", "<div id='content'>", "</head>");
 		
 		if(isset($_GET['reedirect_entry_id']))
 		{
@@ -378,15 +376,16 @@ class Entry_reedirect
 				,'.($this->settings['hide_success_message']*1000).'
 				);
 			}' : '';	
-			
-			$find[] = "<div id='contentNB'>";
-			
+						
+			// Build the success message
 			$get_title = $DB->query("SELECT title FROM exp_weblog_titles 
 				WHERE entry_id = " . $DB->escape_str($_GET['reedirect_entry_id']) . " LIMIT 1");
 			$title = $get_title->row['title'];
 			
-			$message = "<div id='contentNB'>
-			".'<div id="entry_reedirect_message"><div>'.$DSP->span('success');
+			$LANG->fetch_language_file('publish');
+			
+			$message = '
+			<div id="entry_reedirect_message"><div>'.$DSP->span('success');
 			if($_GET['U'] == 'new')
 			{
 				$message .= $LANG->line('entry_has_been_added');
@@ -411,14 +410,11 @@ class Entry_reedirect
 				$message .= $DSP->span_c();
 			}
 			
-			$message .= '<a href="#" id="reedirectClose" title="Hide this notice">&times;</a>'
-				.$DSP->div_c().$DSP->div_c();
-			
-			$replace[] = $message;
-			
-			$find[] = '</head>';
-			
-			$replace[] = '
+			$message .= '<a href="#" id="reedirectClose" title="Hide this notice">&times;</a>';
+			$message .= $DSP->div_c().$DSP->div_c();
+		
+			// CSS and JS for the success message
+			$head = '
 				<style type="text/css">
 					#entry_reedirect_message { border-bottom:1px solid #CCC9A4; position: fixed; width: 100%; left: 0; top: 0; display: none; }
 					* html #entry_reedirect_message { position: absolute; }
@@ -429,9 +425,7 @@ class Entry_reedirect
 				</style>
 				
 				<script type="text/javascript">
-					<!-- Added by Entry REEdirect -->
-					jQuery.noConflict();
-					jQuery(document).ready(function($)
+					$(document).ready(function()
 					{
 						$("div#entry_reedirect_message").slideDown("normal"'.$auto_hide.');
 						$("a#reedirectClose").click(function(){
@@ -440,9 +434,13 @@ class Entry_reedirect
 						});
 					});
 				</script>
-				
-				</head>
 			';
+			
+			$replace = array(
+				"<div id='contentNB'>$message",
+				"<div id='content'>$message",
+				$head."</head>"
+			);
 			
 			$out = str_replace($find, $replace, $out);
 				
